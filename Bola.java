@@ -1,66 +1,68 @@
 /*
  * 
- * 
  */
 
+import javax.swing.ImageIcon;
 import java.awt.Image;
-import java.awt.Rectangle;
 
-public class Base {     //Objeto Base. Bloque, bola, y plataforma son hijos de BASE
-    
-    protected int iX;        //posicion x
-    protected int iY;        //posicion y
-    protected int iWidth;    //ancho
-    protected int iHeight;   //largo
-    protected Image imaImage;  //imagen
-    
-    public Base(int iX, int iY, Image imaImage){
-      this.iX= iX;
-      this.iY= iY;
-      this.imaImage= imaImage;
-      iWidth = imaImage.getWidth(null);     //ancho
-      iHeight = imaImage.getHeight(null);   //largo
-    }
 
-    //funcion para cambiar posicion x
-    public void setX(int iX) {
-        this.iX = iX;
-    }
-    //funcion para obtener posicion x
-    public int getX() {
-        return iX;
-    }
-    
-    //funcion para cambiar posicion y
-    public void setY(int iY) {
-        this.iY = iY;
+public class Bola extends Base implements Dimensiones {
+
+   private int iDirX;
+   private int iDirY;
+
+   protected String ball = "bola.gif";   //Path de la imagen de la bola
+
+   public Bola(Image image) {
+     
+     super(0,0, image);
+     iWidth= 30;
+     iHeight= 30;
+     iDirY = 1;  // Al iniciar el juego se ira hacia abajo
+     posicionOriginal();
     }
 
-    //funcion para obtener posicion y
-    public int getY() {
-        return iY;
-    }
-    
-    //obtener ancho
-    public int getWidth() {
-        return iWidth;
-    }
-    
-    //obtener largo
-    public int getHeight() {
-        return iHeight;
-    }
-
-    //obtener imagen
-    Image getImage()
+    // Funcion que hace mover la bola
+    public void move()
     {
-      return imaImage;
+      iX += iDirX;    // Aumenta la posicion x segun la velocidad x
+      iY += iDirY;    // Aumenta la posicion y segun la velocidad y
+
+      if (iX == 0) {         //si la bola llega a la pared izquierda cambiar direccion a la derecha
+        setXDir(1);
+      }
+
+      if (iX == bola_RIGHT) {    //si la bola llega a la pared derecha cambiar direccion a la izquierda
+        setXDir(-1);
+      }
+
+      if (iY == 0) {     // si la bola llega al "techo" cambiar direccion a abajo
+        setYDir(1);
+      }
+    }
+    
+    //Funcion para poner la bola en su posición original
+    public void posicionOriginal() 
+    {
+      iX = WIDTH/2;
+      iY = HEIGTH/2;
     }
 
-    //obtener rectangulo
-    Rectangle getRect()
+    // funcion para cambiar la direccion x
+    public void setXDir(int iX)
     {
-      return new Rectangle(iX, iY, 
-          imaImage.getWidth(null), imaImage.getHeight(null));
+      iDirX = iX;
+    }
+    
+    // funcion para cambiar la direccion y
+    public void setYDir(int iY)
+    {
+      iDirY = iY;
+    }
+
+    // funcion para obtener la direccion y
+    public int getYDir()
+    {
+      return iDirY;
     }
 }
