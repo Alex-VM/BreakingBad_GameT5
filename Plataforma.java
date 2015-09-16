@@ -17,6 +17,8 @@ public class Plataforma extends Base implements Dimensiones {
     public Plataforma(Image image) {
 
         super(0, 0, image);
+        iWidth= 100;
+        iHeight= 20;
             
         posicionOriginal();     //posicion original
     }
