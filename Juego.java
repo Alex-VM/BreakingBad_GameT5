@@ -46,17 +46,17 @@ public class Juego extends JPanel implements Dimensiones {
   public Juego() {
     
     addKeyListener(new TAdapter());
+    init();
     setFocusable(true);
-    
     setDoubleBuffered(true);
     timer = new Timer();
     timer.scheduleAtFixedRate(new ScheduleTask(), 1000, 10);
   }
   
-  public void addNotify() {
-    super.addNotify();
-    init();
-  }
+  /*public void addNotify() {
+   super.addNotify();
+   init();
+   }*/
   
   public void init() {
     
@@ -101,53 +101,11 @@ public class Juego extends JPanel implements Dimensiones {
     }
     
     for(int i=0;i<3;i++){
-      corCorazones[i]= new Corazon(2+10*i,0, Toolkit.getDefaultToolkit().getImage(hURL), true);
+      corCorazones[i]= new Corazon(2+10*i,590, Toolkit.getDefaultToolkit().getImage(hURL), true);
     }
     
     bOver= false;
     iVidas= 3;
-  }
-  
-  
-  public void paint(Graphics g) {
-    super.paint(g);
-    
-    if (!bOver){
-      g.drawImage(bolBola.getImage(), bolBola.getX(), bolBola.getY(),
-                  bolBola.getWidth(), bolBola.getHeight(), this);
-      g.drawImage(plaPlataforma.getImage(), plaPlataforma.getX(), plaPlataforma.getY(),
-                  plaPlataforma.getWidth(), plaPlataforma.getHeight(), this);
-      
-      for (int i = 0; i < 30; i++) {
-        if (!bloBloques[i].isDestruido())
-          g.drawImage(bloBloques[i].getImage(), bloBloques[i].getX(),
-                      bloBloques[i].getY(), bloBloques[i].getWidth(),
-                      bloBloques[i].getHeight(), this);
-      }
-      
-      for(int i=0;i<3;i++){
-        if(corCorazones[i].getEncendido())
-          g.drawImage(corCorazones[i].getImage(), corCorazones[i].getX(),
-                      corCorazones[i].getY(), corCorazones[i].getWidth(),
-                      corCorazones[i].getHeight(), this);
-      }
-    }
-    
-    else {
-      
-      Font font = new Font("Verdana", Font.BOLD, 18);
-      FontMetrics metr = this.getFontMetrics(font);
-      
-      g.setColor(Color.BLACK);
-      g.setFont(font);
-      g.drawString(sMessage,
-                   (Dimensiones.WIDTH - metr.stringWidth(sMessage)) / 2,
-                   Dimensiones.WIDTH / 2);
-    }
-    
-    
-    Toolkit.getDefaultToolkit().sync();
-    g.dispose();
   }
   
   private class TAdapter extends KeyAdapter {
@@ -274,6 +232,47 @@ public class Juego extends JPanel implements Dimensiones {
         }
       }
     }
+  }
+  
+  public void paint(Graphics g) {
+    super.paint(g);
+    
+    if (!bOver){
+      g.drawImage(bolBola.getImage(), bolBola.getX(), bolBola.getY(),
+                  bolBola.getWidth(), bolBola.getHeight(), this);
+      g.drawImage(plaPlataforma.getImage(), plaPlataforma.getX(), plaPlataforma.getY(),
+                  plaPlataforma.getWidth(), plaPlataforma.getHeight(), this);
+      
+      for (int i = 0; i < 30; i++) {
+        if (!bloBloques[i].isDestruido())
+          g.drawImage(bloBloques[i].getImage(), bloBloques[i].getX(),
+                      bloBloques[i].getY(), bloBloques[i].getWidth(),
+                      bloBloques[i].getHeight(), this);
+      }
+      
+      for(int i=0;i<3;i++){
+        if(corCorazones[i].getEncendido())
+          g.drawImage(corCorazones[i].getImage(), corCorazones[i].getX(),
+                      corCorazones[i].getY(), corCorazones[i].getWidth(),
+                      corCorazones[i].getHeight(), this);
+      }
+    }
+    
+    else {
+      
+      Font font = new Font("Verdana", Font.BOLD, 18);
+      FontMetrics metr = this.getFontMetrics(font);
+      
+      g.setColor(Color.BLACK);
+      g.setFont(font);
+      g.drawString(sMessage,
+                   (Dimensiones.WIDTH - metr.stringWidth(sMessage)) / 2,
+                   Dimensiones.WIDTH / 2);
+    }
+    
+    
+    Toolkit.getDefaultToolkit().sync();
+    g.dispose();
   }
   
   public static void main(String[] args) {
