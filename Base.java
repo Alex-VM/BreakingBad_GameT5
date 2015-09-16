@@ -18,8 +18,6 @@ public class Base {     //Objeto Base. Bloque, bola, y plataforma son hijos de B
       this.iX= iX;
       this.iY= iY;
       this.imaImage= imaImage;
-      iWidth = imaImage.getWidth(null);     //ancho
-      iHeight = imaImage.getHeight(null);   //largo
     }
 
     //funcion para cambiar posicion x
