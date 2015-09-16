@@ -14,6 +14,8 @@ public class Bloque extends Base {
 
     public Bloque(int iX, int iY, Image ima) {
       super(iX, iY, ima);
+      iWidth= 80;
+      iHeight= 40;
 
       bDestruido = false;                //cuando creas el bloque aun no esta destruido
     }
