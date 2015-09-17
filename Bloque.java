@@ -7,16 +7,15 @@ import java.awt.Image;
 
 public class Bloque extends Base {
 
-    String brick = "methAzul.gif";  //path de la imagen del bloque
-
     boolean bDestruido;  // status del bloque (Destruida o no destruido)
+    boolean bExplosivo;
 
 
-    public Bloque(int iX, int iY, Image ima) {
+    public Bloque(int iX, int iY, Image ima, boolean exp) {
       super(iX, iY, ima);
       iWidth= 80;
       iHeight= 40;
-
+      bExplosivo= exp;
       bDestruido = false;                //cuando creas el bloque aun no esta destruido
     }
     
@@ -30,6 +29,14 @@ public class Bloque extends Base {
     public void setDestruido(boolean bDestruido)
     {
       this.bDestruido = bDestruido;
+    }
+    
+    public void setExplosivo(boolean bExp){
+      this.bExplosivo= bExp;
+    }
+    
+    public boolean isExplosivo(){
+      return bExplosivo;
     }
 
 }
