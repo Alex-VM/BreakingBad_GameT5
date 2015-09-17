@@ -18,6 +18,9 @@ public class Corazon extends Base {
   */
  public Corazon(int posX,int posY,Image image, boolean bOn){
   super(posX,posY,image);
+  
+  iWidth= 15;
+  iHeight= 15;
   bEncendido= bOn;
  }
  
