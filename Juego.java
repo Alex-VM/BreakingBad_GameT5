@@ -29,23 +29,23 @@ import java.util.TimerTask;
 import javax.swing.JPanel;
 
 
-public class Juego extends JPanel implements Dimensiones {
+public class Juego extends JPanel implements KeyListener, Dimensiones {
   
-  Image ii;
-  Timer timer;
-  String sMessage;
-  Bola bolBola;
-  Plataforma plaPlataforma;
-  Bloque bloBloques[][];
-  Corazon corCorazones[];
+  private Image ii;
+  private Timer timer;
+  private String sMessage;
+  private Bola bolBola;
+  private Plataforma plaPlataforma;
+  private Bloque bloBloques[][];
+  private Corazon corCorazones[];
+  private AudioStream asRebote;    // Objeto AudioStream
+  private AudioStream asExplosion;    // Objeto AudioStream
   
-  boolean bOver;
-  int timerId;
-  int iVidas;
+  private boolean bOver;
+  private int timerId;
+  private int iVidas;
   
   public Juego() {
-    
-    addKeyListener(new TAdapter());
     init();
     setFocusable(true);
     setDoubleBuffered(true);
@@ -93,19 +93,9 @@ public class Juego extends JPanel implements Dimensiones {
     
     bOver= false;
     iVidas= 3;
-  }
-  
-  private class TAdapter extends KeyAdapter {
     
-    public void keyReleased(KeyEvent e) {
-      plaPlataforma.keyReleased(e);
-    }
-    
-    public void keyPressed(KeyEvent e) {
-      plaPlataforma.keyPressed(e);
-    }
+    addKeyListener(this);
   }
-  
   
   class ScheduleTask extends TimerTask {
     
@@ -118,8 +108,8 @@ public class Juego extends JPanel implements Dimensiones {
   }
   
   public void stopGame() {
+    init();
     bOver = true;
-    timer.cancel();
   }
   
   
@@ -143,22 +133,31 @@ public class Juego extends JPanel implements Dimensiones {
     }
     
     /*int a=0;
-    
-    for (int i = 0; i < 5; i++) {
-      for(int j=0;j<6;j++){
-        if(bloBloques[i][j].isDestruido()){
-          a++;
-        }
-      }
-    }
-    
-    if (a == 30) {
-      sMessage = "Victory";
-      stopGame();
-    }*/
+     * 
+     for (int i = 0; i < 5; i++) {
+     for(int j=0;j<6;j++){
+     if(bloBloques[i][j].isDestruido()){
+     a++;
+     }
+     }
+     }
+     
+     if (a == 30) {
+     sMessage = "Victory";
+     stopGame();
+     }*/
     
     //Revisa colisiones con la barra
     if ((bolBola.getRect()).intersects(plaPlataforma.getRect())) {
+      
+      //Se crean los sonidos cada vez, pues el InputStream requiere
+      //crearse una vez
+      try{
+        InputStream in = new FileInputStream("pong.wav");
+        asRebote = new AudioStream(in);
+      }
+      catch(Exception e){
+      }
       
       int plataformaLPos = (int)plaPlataforma.getRect().getMinX();
       int bolaLPos = (int)bolBola.getRect().getMinX();
@@ -192,12 +191,36 @@ public class Juego extends JPanel implements Dimensiones {
         bolBola.setXDir(1);
         bolBola.setYDir(-1);
       }
+      //AudioPlayer.player.start(asRebote);
     }
+    
+      if (bolBola.getX() == 0) {         //si la bola llega a la pared izquierda cambiar direccion a la derecha
+        bolBola.setXDir(1);
+      }
+
+      else if (bolBola.getX() == bola_RIGHT) {    //si la bola llega a la pared derecha cambiar direccion a la izquierda
+        bolBola.setXDir(-1);
+      }
+
+      if (bolBola.getY() == 0) {     // si la bola llega al "techo" cambiar direccion a abajo
+        bolBola.setYDir(1);
+      }
     
     //Revisa colisiones con los bloques
     for (int i = 0; i < 5; i++) {
       for(int j=0;j<6;j++){
         if ((bolBola.getRect()).intersects(bloBloques[i][j].getRect())) {
+          
+          //Se crean los sonidos cada vez, pues el InputStream requiere
+          //crearse una vez
+          try{
+            InputStream in = new FileInputStream("explosion.wav");
+            asExplosion = new AudioStream(in);
+            in = new FileInputStream("pong.wav");
+            asRebote = new AudioStream(in);
+          }
+          catch(Exception e){
+          }
           
           int bolaLeft = (int)bolBola.getRect().getMinX();
           int bolaHeight = (int)bolBola.getRect().getHeight();
@@ -270,6 +293,11 @@ public class Juego extends JPanel implements Dimensiones {
                   }
                 }
               }
+              AudioPlayer.player.start(asExplosion);
+            }
+            
+            else{
+              AudioPlayer.player.start(asRebote);
             }
             
             bloBloques[i][j].setDestruido(true);
@@ -291,13 +319,13 @@ public class Juego extends JPanel implements Dimensiones {
       
       
       for (int i = 0; i < 5; i++) {
-      for(int j=0;j<6;j++){
-        if (!bloBloques[i][j].isDestruido())
-          g.drawImage(bloBloques[i][j].getImage(), bloBloques[i][j].getX(),
-                      bloBloques[i][j].getY(), bloBloques[i][j].getWidth(),
-                      bloBloques[i][j].getHeight(), this);
+        for(int j=0;j<6;j++){
+          if (!bloBloques[i][j].isDestruido())
+            g.drawImage(bloBloques[i][j].getImage(), bloBloques[i][j].getX(),
+                        bloBloques[i][j].getY(), bloBloques[i][j].getWidth(),
+                        bloBloques[i][j].getHeight(), this);
+        }
       }
-    }
       
       for(int i=0;i<3;i++){
         if(corCorazones[i].getEncendido()){
@@ -323,6 +351,40 @@ public class Juego extends JPanel implements Dimensiones {
     
     Toolkit.getDefaultToolkit().sync();
     g.dispose();
+  }
+  
+  //detecta las teclas que presionas, cambiara el cambio en x dependiendo a la flechita que presiones
+  public void keyPressed(KeyEvent e) {
+    
+    int key = e.getKeyCode();
+    
+    if (key == KeyEvent.VK_LEFT) {  //presiona flecha izq para moverlo a la izq
+      plaPlataforma.setDir(-2);
+      
+    }
+    
+    if (key == KeyEvent.VK_RIGHT) { //presiona flecha der para moverlo a la der
+      plaPlataforma.setDir(2);
+    }
+  }
+  
+  // detecta cuando sueltas la tecla, dejara de moverse cuando sueltes la tecla
+  public void keyReleased(KeyEvent e) {
+    int key = e.getKeyCode();
+    
+    if (key == KeyEvent.VK_LEFT) {
+      plaPlataforma.setDir(0);
+    }
+    
+    if (key == KeyEvent.VK_RIGHT) {
+      plaPlataforma.setDir(0);
+    }
+    
+    if(key==KeyEvent.VK_S){
+    }
+  }
+  
+  public void keyTyped(KeyEvent e) {
   }
   
   public static void main(String[] args) {
