@@ -26,19 +26,7 @@ public class Bola extends Base implements Dimensiones {
     public void move()
     {
       iX += iDirX;    // Aumenta la posicion x segun la velocidad x
-      iY += iDirY;    // Aumenta la posicion y segun la velocidad y
-
-      if (iX == 0) {         //si la bola llega a la pared izquierda cambiar direccion a la derecha
-        setXDir(1);
-      }
-
-      if (iX == bola_RIGHT) {    //si la bola llega a la pared derecha cambiar direccion a la izquierda
-        setXDir(-1);
-      }
-
-      if (iY == 0) {     // si la bola llega al "techo" cambiar direccion a abajo
-        setYDir(1);
-      }
+      iY += iDirY;    // Aumenta la posicion y segun la velocidad 
     }
     
     //Funcion para poner la bola en su posición original
