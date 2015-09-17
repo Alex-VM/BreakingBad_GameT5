@@ -53,11 +53,6 @@ public class Juego extends JPanel implements Dimensiones {
     timer.scheduleAtFixedRate(new ScheduleTask(), 1000, 10);
   }
   
-  /*public void addNotify() {
-   super.addNotify();
-   init();
-   }*/
-  
   public void init() {
     
     URL bURL = this.getClass().getResource("bola.gif");
@@ -82,12 +77,12 @@ public class Juego extends JPanel implements Dimensiones {
         
         if((iRand==1||iRand==2)&&iCantMethExp>0){
           bloBloques[i][j] = new Bloque(j * Dimensiones.WIDTH/6 , i * Dimensiones.HEIGTH/20, 
-                                        Toolkit.getDefaultToolkit().getImage(meURL));
+                                        Toolkit.getDefaultToolkit().getImage(meURL), true);
           iCantMethExp--;
         }
         else{
           bloBloques[i][j] = new Bloque(j * Dimensiones.WIDTH/6 , i * Dimensiones.HEIGTH/20, 
-                                        Toolkit.getDefaultToolkit().getImage(maURL));
+                                        Toolkit.getDefaultToolkit().getImage(maURL), false);
         }
       }
     }
@@ -147,7 +142,7 @@ public class Juego extends JPanel implements Dimensiones {
       
     }
     
-    int a=0;
+    /*int a=0;
     
     for (int i = 0; i < 5; i++) {
       for(int j=0;j<6;j++){
@@ -160,8 +155,9 @@ public class Juego extends JPanel implements Dimensiones {
     if (a == 30) {
       sMessage = "Victory";
       stopGame();
-    }
+    }*/
     
+    //Revisa colisiones con la barra
     if ((bolBola.getRect()).intersects(plaPlataforma.getRect())) {
       
       int plataformaLPos = (int)plaPlataforma.getRect().getMinX();
@@ -198,6 +194,7 @@ public class Juego extends JPanel implements Dimensiones {
       }
     }
     
+    //Revisa colisiones con los bloques
     for (int i = 0; i < 5; i++) {
       for(int j=0;j<6;j++){
         if ((bolBola.getRect()).intersects(bloBloques[i][j].getRect())) {
@@ -230,6 +227,51 @@ public class Juego extends JPanel implements Dimensiones {
             else if (bloBloques[i][j].getRect().contains(pointBottom)) {
               bolBola.setYDir(-1);
             }
+            
+            //Si colisionó con un bloque explosivo
+            if(bloBloques[i][j].isExplosivo()){
+              if(j<4){
+                if(!bloBloques[i][j+1].isDestruido()){
+                  bloBloques[i][j+1].setDestruido(true);
+                }
+              }
+              if(j>0){
+                if(!bloBloques[i][j-1].isDestruido()){
+                  bloBloques[i][j-1].setDestruido(true);
+                }
+              }
+              if(i<3){
+                if(!bloBloques[i+1][j].isDestruido()){
+                  bloBloques[i+1][j].setDestruido(true);
+                }
+                if(j<4){
+                  if(!bloBloques[i+1][j+1].isDestruido()){
+                    bloBloques[i+1][j+1].setDestruido(true);
+                  }
+                }
+                if(j>0){
+                  if(!bloBloques[i+1][j-1].isDestruido()){
+                    bloBloques[i+1][j-1].setDestruido(true);
+                  }
+                }
+              }
+              if(i>0){
+                if(!bloBloques[i-1][j].isDestruido()){
+                  bloBloques[i-1][j].setDestruido(true);
+                }
+                if(j<4){
+                  if(!bloBloques[i-1][j+1].isDestruido()){
+                    bloBloques[i-1][j+1].setDestruido(true);
+                  }
+                }
+                if(j>0){
+                  if(!bloBloques[i-1][j-1].isDestruido()){
+                    bloBloques[i-1][j-1].setDestruido(true);
+                  }
+                }
+              }
+            }
+            
             bloBloques[i][j].setDestruido(true);
           }
         }
