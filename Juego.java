@@ -36,7 +36,7 @@ public class Juego extends JPanel implements Dimensiones {
   String sMessage;
   Bola bolBola;
   Plataforma plaPlataforma;
-  Bloque bloBloques[];
+  Bloque bloBloques[][];
   Corazon corCorazones[];
   
   boolean bOver;
@@ -70,38 +70,30 @@ public class Juego extends JPanel implements Dimensiones {
     
     bolBola = new Bola(Toolkit.getDefaultToolkit().getImage(bURL));
     plaPlataforma = new Plataforma(Toolkit.getDefaultToolkit().getImage(pURL));
-    bloBloques = new Bloque[30];
+    bloBloques = new Bloque[5][6];
     corCorazones= new Corazon[3];
     sMessage= "Game Over";
     
-    int k = 0;
     for (int i = 0; i < 5; i++) {
-      int iCantMethExp= (int)(Math.random()*2);
-      int iCantMethAzul= (int)(Math.random()*3);
+      int iCantMethExp= (int)(Math.random()*3);
       for (int j = 0; j < 6; j++) {
         
         int iRand= (int)(Math.random()*4);
         
-        if(iRand==0&&iCantMethAzul>0){
-          bloBloques[k] = new Bloque(j * Dimensiones.WIDTH/6 + 15 , i * Dimensiones.HEIGTH/20, 
-                                     Toolkit.getDefaultToolkit().getImage(maURL));
-          iCantMethAzul--;
-        }
-        else if(iRand==1&&iCantMethExp>0){
-          bloBloques[k] = new Bloque(j * Dimensiones.WIDTH/6 + 15 , i * Dimensiones.HEIGTH/20, 
-                                     Toolkit.getDefaultToolkit().getImage(meURL));
+        if((iRand==1||iRand==2)&&iCantMethExp>0){
+          bloBloques[i][j] = new Bloque(j * Dimensiones.WIDTH/6 , i * Dimensiones.HEIGTH/20, 
+                                        Toolkit.getDefaultToolkit().getImage(meURL));
           iCantMethExp--;
         }
         else{
-          bloBloques[k] = new Bloque(j * Dimensiones.WIDTH/6 + 15 , i * Dimensiones.HEIGTH/20, 
-                                     Toolkit.getDefaultToolkit().getImage(mjURL));
+          bloBloques[i][j] = new Bloque(j * Dimensiones.WIDTH/6 , i * Dimensiones.HEIGTH/20, 
+                                        Toolkit.getDefaultToolkit().getImage(maURL));
         }
-        k++;
       }
     }
     
     for(int i=0;i<3;i++){
-      corCorazones[i]= new Corazon(2+10*i,590, Toolkit.getDefaultToolkit().getImage(hURL), true);
+      corCorazones[i]= new Corazon(2+10*i, Dimensiones.HEIGTH-50, Toolkit.getDefaultToolkit().getImage(hURL), true);
     }
     
     bOver= false;
@@ -149,16 +141,25 @@ public class Juego extends JPanel implements Dimensiones {
       if(iVidas==0){
         bOver= true;
       }
+      if(iVidas>=0){
+        corCorazones[iVidas].setEncendido(false);
+      }
+      
     }
     
-    for (int i = 0, j = 0; i < 30; i++) {
-      if (bloBloques[i].isDestruido()) {
-        j++;
+    int a=0;
+    
+    for (int i = 0; i < 5; i++) {
+      for(int j=0;j<6;j++){
+        if(bloBloques[i][j].isDestruido()){
+          a++;
+        }
       }
-      if (j == 30) {
-        sMessage = "Victory";
-        stopGame();
-      }
+    }
+    
+    if (a == 30) {
+      sMessage = "Victory";
+      stopGame();
     }
     
     if ((bolBola.getRect()).intersects(plaPlataforma.getRect())) {
@@ -197,41 +198,44 @@ public class Juego extends JPanel implements Dimensiones {
       }
     }
     
-    for (int i = 0; i < 30; i++) {
-      if ((bolBola.getRect()).intersects(bloBloques[i].getRect())) {
-        
-        int bolaLeft = (int)bolBola.getRect().getMinX();
-        int bolaHeight = (int)bolBola.getRect().getHeight();
-        int bolaWidth = (int)bolBola.getRect().getWidth();
-        int bolaTop = (int)bolBola.getRect().getMinY();
-        
-        Point pointRight =
-          new Point(bolaLeft + bolaWidth + 1, bolaTop);
-        Point pointLeft = new Point(bolaLeft - 1, bolaTop);
-        Point pointTop = new Point(bolaLeft, bolaTop - 1);
-        Point pointBottom =
-          new Point(bolaLeft, bolaTop + bolaHeight + 1);
-        
-        if (!bloBloques[i].isDestruido()) {
-          if (bloBloques[i].getRect().contains(pointRight)) {
-            bolBola.setXDir(-1);
-          }
+    for (int i = 0; i < 5; i++) {
+      for(int j=0;j<6;j++){
+        if ((bolBola.getRect()).intersects(bloBloques[i][j].getRect())) {
           
-          else if (bloBloques[i].getRect().contains(pointLeft)) {
-            bolBola.setXDir(1);
-          }
+          int bolaLeft = (int)bolBola.getRect().getMinX();
+          int bolaHeight = (int)bolBola.getRect().getHeight();
+          int bolaWidth = (int)bolBola.getRect().getWidth();
+          int bolaTop = (int)bolBola.getRect().getMinY();
           
-          if (bloBloques[i].getRect().contains(pointTop)) {
-            bolBola.setYDir(1);
-          }
+          Point pointRight =
+            new Point(bolaLeft + bolaWidth + 1, bolaTop);
+          Point pointLeft = new Point(bolaLeft - 1, bolaTop);
+          Point pointTop = new Point(bolaLeft, bolaTop - 1);
+          Point pointBottom =
+            new Point(bolaLeft, bolaTop + bolaHeight + 1);
           
-          else if (bloBloques[i].getRect().contains(pointBottom)) {
-            bolBola.setYDir(-1);
+          if (!bloBloques[i][j].isDestruido()) {
+            if (bloBloques[i][j].getRect().contains(pointRight)) {
+              bolBola.setXDir(-1);
+            }
+            
+            else if (bloBloques[i][j].getRect().contains(pointLeft)) {
+              bolBola.setXDir(1);
+            }
+            
+            if (bloBloques[i][j].getRect().contains(pointTop)) {
+              bolBola.setYDir(1);
+            }
+            
+            else if (bloBloques[i][j].getRect().contains(pointBottom)) {
+              bolBola.setYDir(-1);
+            }
+            bloBloques[i][j].setDestruido(true);
           }
-          bloBloques[i].setDestruido(true);
         }
       }
     }
+    
   }
   
   public void paint(Graphics g) {
@@ -243,18 +247,22 @@ public class Juego extends JPanel implements Dimensiones {
       g.drawImage(plaPlataforma.getImage(), plaPlataforma.getX(), plaPlataforma.getY(),
                   plaPlataforma.getWidth(), plaPlataforma.getHeight(), this);
       
-      for (int i = 0; i < 30; i++) {
-        if (!bloBloques[i].isDestruido())
-          g.drawImage(bloBloques[i].getImage(), bloBloques[i].getX(),
-                      bloBloques[i].getY(), bloBloques[i].getWidth(),
-                      bloBloques[i].getHeight(), this);
+      
+      for (int i = 0; i < 5; i++) {
+      for(int j=0;j<6;j++){
+        if (!bloBloques[i][j].isDestruido())
+          g.drawImage(bloBloques[i][j].getImage(), bloBloques[i][j].getX(),
+                      bloBloques[i][j].getY(), bloBloques[i][j].getWidth(),
+                      bloBloques[i][j].getHeight(), this);
       }
+    }
       
       for(int i=0;i<3;i++){
-        if(corCorazones[i].getEncendido())
+        if(corCorazones[i].getEncendido()){
           g.drawImage(corCorazones[i].getImage(), corCorazones[i].getX(),
                       corCorazones[i].getY(), corCorazones[i].getWidth(),
                       corCorazones[i].getHeight(), this);
+        }
       }
     }
     
@@ -278,4 +286,5 @@ public class Juego extends JPanel implements Dimensiones {
   public static void main(String[] args) {
     new BreakingBad();
   }
+  
 }
