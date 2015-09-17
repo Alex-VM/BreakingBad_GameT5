@@ -26,7 +26,7 @@ public class Plataforma extends Base implements Dimensiones {
         iX += iDir;    //sumale a la posicion x el cambio en x
         if (iX <= 2)     //que no pase la pared de la izquierda
           iX = 2;
-        if (iX+90 >= Dimensiones.PLATAFORMA_RIGHT)  //que no pase la pared de la derecha
+        if (iX >= Dimensiones.PLATAFORMA_RIGHT)  //que no pase la pared de la derecha
           iX = Dimensiones.PLATAFORMA_RIGHT;
     }
     
